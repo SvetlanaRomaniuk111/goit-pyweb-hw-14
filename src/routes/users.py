@@ -30,15 +30,10 @@ async def read_users_me(user: User = Depends(auth_service.get_current_user)):
     """
     Retrieves the current user's information.
 
-    Parameters:
-        user (User): The current user.
-
-    Returns:
-        UserResponse: The current user's information.
-
-    Notes:
-        This endpoint returns the current user's information.
-        The endpoint is rate-limited to 1 request per 20 seconds.
+    :param user: User: The current user.
+    :return: UserResponse: The current user's information.
+    :notes: This endpoint returns the current user's information.
+            The endpoint is rate-limited to 1 request per 20 seconds.
     """
     return user
 
@@ -56,18 +51,13 @@ async def update_avatar_user(
     """
     Updates the current user's avatar.
 
-    Parameters:
-        file (UploadFile): The new avatar file.
-        user (User): The current user.
-        db (AsyncSession): The database session.
-
-    Returns:
-        UserResponse: The updated user's information.
-
-    Notes:
-        This endpoint updates the current user's avatar.
-        The endpoint is rate-limited to 1 request per 20 seconds.
-        The avatar is uploaded to Cloudinary and the URL is updated in the database.
+    :param file: UploadFile: The new avatar file.
+    :param user: User: The current user.
+    :param db: AsyncSession: The database session.
+    :return: UserResponse: The updated user's information.
+    :notes: This endpoint updates the current user's avatar.
+            The endpoint is rate-limited to 1 request per 20 seconds.
+            The avatar is uploaded to Cloudinary and the URL is updated in the database.
     """
     public_id = f"ContactsApp/{user.email}"
     res = cloudinary.uploader.upload(file.file, public_id=public_id, owerite=True)

@@ -26,16 +26,11 @@ async def send_email(email: EmailStr, username: str, host: str):
     """
     Send an email to a user to verify their email address.
 
-    Parameters:
-        email (EmailStr): The email address of the user.
-        username (str): The username of the user.
-        host (str): The host URL of the application.
-
-    Returns:
-        None
-
-    Raises:
-        ConnectionErrors: If there is an error sending the email.
+    :param email: EmailStr: The email address of the user.
+    :param username: str: The username of the user.
+    :param host: str: The host URL of the application.
+    :return: None
+    :raises ConnectionErrors: If there is an error sending the email.
     """
     try:
         token_verification = auth_service.create_email_token({"sub": email})

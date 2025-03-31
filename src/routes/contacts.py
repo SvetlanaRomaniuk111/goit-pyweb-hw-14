@@ -28,20 +28,15 @@ async def get_contacts(
     """
     Retrieves a list of contacts.
 
-    Parameters:
-        limit (int): The maximum number of contacts to return (default: 10, min: 10, max: 500).
-        offset (int): The offset from which to start returning contacts (default: 0, min: 0).
-        first_name (str): Optional filter by first name.
-        last_name (str): Optional filter by last name.
-        email (str): Optional filter by email.
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        list[ContactResponse]: A list of contact responses.
-
-    Notes:
-        This endpoint returns a paginated list of contacts, with optional filtering by first name, last name, and email.
+    :param limit: int: The maximum number of contacts to return (default: 10, min: 10, max: 500).
+    :param offset: int: The offset from which to start returning contacts (default: 0, min: 0).
+    :param first_name: str: Optional filter by first name.
+    :param last_name: str: Optional filter by last name.
+    :param email: str: Optional filter by email.
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: list[ContactResponse]: A list of contact responses.
+    :notes: This endpoint returns a paginated list of contacts, with optional filtering by first name, last name, and email.
     """
     contacts = await repositories_contacts.get_contacts(
         limit, offset, first_name, last_name, email, db, user
@@ -57,18 +52,11 @@ async def get_upcoming_birthdays(
     """
     Retrieves a list of upcoming birthdays.
 
-    Parameters:
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        list[ContactShortResponse]: A list of contact short responses with upcoming birthdays.
-
-    Raises:
-        HTTPException: If an error occurs while retrieving birthdays.
-
-    Notes:
-        This endpoint returns a list of contacts with upcoming birthdays, validated against the ContactShortResponse model.
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: list[ContactShortResponse]: A list of contact short responses with upcoming birthdays.
+    :raises HTTPException: If an error occurs while retrieving birthdays.
+    :notes: This endpoint returns a list of contacts with upcoming birthdays, validated against the ContactShortResponse model.
     """
     try:
         contacts = await repositories_contacts.get_upcoming_birthdays(db, user)
@@ -100,20 +88,13 @@ async def create_contact(
     """
     Creates a new contact.
 
-    Parameters:
-        body (ContactCreateSchema): The contact creation schema.
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        ContactResponse: The created contact response.
-
-    Raises:
-        HTTPException: If an error occurs while creating the contact.
-
-    Notes:
-        This endpoint is rate-limited to 1 request per 20 seconds.
-        The contact creation schema is validated against the ContactCreateSchema model.
+    :param body: ContactCreateSchema: The contact creation schema.
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: ContactResponse: The created contact response.
+    :raises HTTPException: If an error occurs while creating the contact.
+    :notes: This endpoint is rate-limited to 1 request per 20 seconds.
+            The contact creation schema is validated against the ContactCreateSchema model.
     """
     try:
         contact = await repositories_contacts.create_contact(body, db, user)
@@ -134,20 +115,13 @@ async def get_contact(
     """
     Retrieves a contact by ID.
 
-    Parameters:
-        contact_id (int): The ID of the contact to retrieve (must be greater than or equal to 1).
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        ContactResponse: The retrieved contact response.
-
-    Raises:
-        HTTPException: If the contact is not found.
-
-    Notes:
-        This endpoint retrieves a contact by its ID, and returns a ContactResponse object.
-        If the contact is not found, a 404 error is raised.
+    :param contact_id: int: The ID of the contact to retrieve (must be greater than or equal to 1).
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: ContactResponse: The retrieved contact response.
+    :raises HTTPException: If the contact is not found.
+    :notes: This endpoint retrieves a contact by its ID, and returns a ContactResponse object.
+            If the contact is not found, a 404 error is raised.
     """
     contact = await repositories_contacts.get_contact(contact_id, db, user)
     if contact is None:
@@ -167,22 +141,15 @@ async def update_contact(
     """
     Updates a contact by ID.
 
-    Parameters:
-        body (ContactUpdateSchema): The contact update schema.
-        contact_id (int): The ID of the contact to update (must be greater than or equal to 1).
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        Contact: The updated contact.
-
-    Raises:
-        HTTPException: If the contact is not found.
-
-    Notes:
-        This endpoint updates a contact by its ID, using the provided update schema.
-        If the contact is not found, a 404 error is raised.
-        The contact update schema is validated against the ContactUpdateSchema model.
+    :param body: ContactUpdateSchema: The contact update schema.
+    :param contact_id: int: The ID of the contact to update (must be greater than or equal to 1).
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: Contact: The updated contact.
+    :raises HTTPException: If the contact is not found.
+    :notes: This endpoint updates a contact by its ID, using the provided update schema.
+            If the contact is not found, a 404 error is raised.
+            The contact update schema is validated against the ContactUpdateSchema model.
     """
     contact = await repositories_contacts.update_contact(contact_id, body, db, user)
     if contact is None:
@@ -201,17 +168,12 @@ async def delete_contact(
     """
     Deletes a contact by ID.
 
-    Parameters:
-        contact_id (int): The ID of the contact to delete (must be greater than or equal to 1).
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        None: No content is returned (204 status code).
-
-    Notes:
-        This endpoint deletes a contact by its ID.
-        If the contact is deleted successfully, a 204 status code is returned.
+    :param contact_id: int: The ID of the contact to delete (must be greater than or equal to 1).
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: None: No content is returned (204 status code).
+    :notes: This endpoint deletes a contact by its ID.
+            If the contact is deleted successfully, a 204 status code is returned.
     """
     contact = await repositories_contacts.delete_contact(contact_id, db, user)
     return contact

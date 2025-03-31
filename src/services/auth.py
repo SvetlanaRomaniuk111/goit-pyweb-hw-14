@@ -33,12 +33,9 @@ class Auth:
         """
         Verify a plain password against a hashed password.
 
-        Parameters:
-            plain_password (str): The plain password to verify.
-            hashed_password (str): The hashed password to verify against.
-
-        Returns:
-            bool: True if the passwords match, False otherwise.
+        :param plain_password: str: The plain password to verify.
+        :param hashed_password: str: The hashed password to verify against.
+        :return: bool: True if the passwords match, False otherwise.
         """
         return self.pwd_context.verify(plain_password, hashed_password)
 
@@ -46,11 +43,8 @@ class Auth:
         """
         Get the hashed version of a password.
 
-        Parameters:
-            password (str): The password to hash.
-
-        Returns:
-            str: The hashed password.
+        :param password: str: The password to hash.
+        :return: str: The hashed password.
         """
         return self.pwd_context.hash(password)
 
@@ -63,12 +57,9 @@ class Auth:
         """
         Create a new access token.
 
-        Parameters:
-            data (dict): The data to encode in the token.
-            expires_delta (Optional[float]): The time in seconds until the token expires.
-
-        Returns:
-            str: The encoded access token.
+        :param data: dict: The data to encode in the token.
+        :param expires_delta: Optional[float]: The time in seconds until the token expires.
+        :return: str: The encoded access token.
         """
         to_encode = data.copy()
         if expires_delta:
@@ -89,12 +80,9 @@ class Auth:
         """
         Create a new refresh token.
 
-        Parameters:
-            data (dict): The data to encode in the token.
-            expires_delta (Optional[float]): The time in seconds until the token expires.
-
-        Returns:
-            str: The encoded refresh token.
+        :param data: dict: The data to encode in the token.
+        :param expires_delta: Optional[float]: The time in seconds until the token expires.
+        :return: str: The encoded refresh token.
         """
         to_encode = data.copy()
         if expires_delta:
@@ -113,14 +101,9 @@ class Auth:
         """
         Decode a refresh token and extract the email address.
 
-        Parameters:
-            refresh_token (str): The refresh token to decode.
-
-        Returns:
-            str: The email address extracted from the token.
-
-        Raises:
-            HTTPException: If the token is invalid or cannot be decoded.
+        :param refresh_token: str: The refresh token to decode.
+        :return: str: The email address extracted from the token.
+        :raises HTTPException: If the token is invalid or cannot be decoded.
         """
         try:
             payload = jwt.decode(
@@ -145,15 +128,10 @@ class Auth:
         """
         Get the current user based on the provided token.
 
-        Parameters:
-            token (str): The token to use for authentication.
-            db (AsyncSession): The database session to use.
-
-        Returns:
-            User: The current user.
-
-        Raises:
-            HTTPException: If the token is invalid or cannot be decoded.
+        :param token: str: The token to use for authentication.
+        :param db: AsyncSession: The database session to use.
+        :return: User: The current user.
+        :raises HTTPException: If the token is invalid or cannot be decoded.
         """
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -193,11 +171,8 @@ class Auth:
         """
         Create a token for email verification.
 
-        Parameters:
-            data (dict): The data to encode in the token.
-
-        Returns:
-            str: The encoded token.
+        :param data: dict: The data to encode in the token.
+        :return: str: The encoded token.
         """
         to_encode = data.copy()
         expire = datetime.now(dt.timezone.utc) + timedelta(days=7)
@@ -209,14 +184,9 @@ class Auth:
         """
         Extract the email address from a token.
 
-        Parameters:
-            token (str): The token to decode.
-
-        Returns:
-            str: The email address extracted from the token.
-
-        Raises:
-            HTTPException: If the token is invalid or cannot be decoded.
+        :param token: str: The token to decode.
+        :return: str: The email address extracted from the token.
+        :raises HTTPException: If the token is invalid or cannot be decoded.
         """
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
@@ -233,13 +203,10 @@ class Auth:
         """
         Update the password of a user in the database.
 
-        Parameters:
-            email (str): The email address of the user.
-            new_password (str): The new password to set.
-            db (AsyncSession): The database session to use.
-
-        Raises:
-            HTTPException: If the user is not found or the password cannot be updated.
+        :param email: str: The email address of the user.
+        :param new_password: str: The new password to set.
+        :param db: AsyncSession: The database session to use.
+        :raises HTTPException: If the user is not found or the password cannot be updated.
         """
         user = await repositories_users.get_user_by_email(email, db)
         if not user:

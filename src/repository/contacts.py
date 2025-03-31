@@ -10,19 +10,15 @@ async def get_contacts(limit: int, offset: int, first_name: str, last_name: str,
     """
     Retrieve contacts based on given parameters.
 
-    Parameters:
-        limit (int): The maximum number of contacts to retrieve.
-        offset (int): The number of contacts to skip.
-        first_name (str): The first name of the contact to filter by.
-        last_name (str): The last name of the contact to filter by.
-        email (str): The email address of the contact to filter by.
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        list: A list of contacts that match the given parameters. If no contacts are found, an empty list is returned.
+    :param limit: int: The maximum number of contacts to retrieve.
+    :param offset: int: The number of contacts to skip.
+    :param first_name: str: The first name of the contact to filter by.
+    :param last_name: str: The last name of the contact to filter by.
+    :param email: str: The email address of the contact to filter by.
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: list: A list of contacts that match the given parameters. If no contacts are found, an empty list is returned.
     """
-
     stmt = select(Contact).filter_by(user=user).offset(offset).limit(limit)
     if first_name or last_name or email:
         stmt = stmt.filter(
@@ -42,13 +38,10 @@ async def get_contact(contact_id: int, db: AsyncSession, user: User):
     """
     Retrieve a contact by its ID.
 
-    Parameters:
-        contact_id (int): The ID of the contact to retrieve.
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        Contact: The contact object if found, otherwise None.
+    :param contact_id: int: The ID of the contact to retrieve.
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: Contact: The contact object if found, otherwise None.
     """
     stmt = select(Contact).filter_by(id=contact_id, user=user)
     contact = await db.execute(stmt)
@@ -60,13 +53,10 @@ async def create_contact(body: ContactCreateSchema, db: AsyncSession,
     """
     Create a new contact.
 
-    Parameters:
-        body (ContactCreateSchema): The contact data to create.
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        Contact: The created contact object.
+    :param body: ContactCreateSchema: The contact data to create.
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: Contact: The created contact object.
     """
     contact = Contact(**body.model_dump(exclude_unset=True), user=user)
     db.add(contact)
@@ -80,14 +70,11 @@ async def update_contact(contact_id: int, body: ContactUpdateSchema,
     """
     Update an existing contact.
 
-    Parameters:
-        contact_id (int): The ID of the contact to update.
-        body (ContactUpdateSchema): The contact data to update.
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        Contact: The updated contact object. If the contact is not found, None is returned.
+    :param contact_id: int: The ID of the contact to update.
+    :param body: ContactUpdateSchema: The contact data to update.
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: Contact: The updated contact object. If the contact is not found, None is returned.
     """
     stmt = select(Contact).filter_by(id=contact_id, user=user)
     result = await db.execute(stmt)
@@ -104,13 +91,10 @@ async def delete_contact(contact_id: int, db: AsyncSession, user: User):
     """
     Delete a contact by its ID.
 
-    Parameters:
-        contact_id (int): The ID of the contact to delete.
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        Contact: The deleted contact object. If the contact is not found, None is returned.
+    :param contact_id: int: The ID of the contact to delete.
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: Contact: The deleted contact object. If the contact is not found, None is returned.
     """
     stmt = select(Contact).filter_by(id=contact_id, user=user)
     contact = await db.execute(stmt)
@@ -125,12 +109,9 @@ async def get_upcoming_birthdays(db: AsyncSession, user: User):
     """
     Fetch contacts who have upcoming birthdays within the next 7 days.
 
-    Parameters:
-        db (AsyncSession): The database session.
-        user (User): The current user.
-
-    Returns:
-        list: A list of contacts who have upcoming birthdays. If no contacts are found, an empty list is returned.
+    :param db: AsyncSession: The database session.
+    :param user: User: The current user.
+    :return: list: A list of contacts who have upcoming birthdays. If no contacts are found, an empty list is returned.
     """
     try:
         today = date.today()
