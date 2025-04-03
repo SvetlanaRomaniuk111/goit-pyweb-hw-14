@@ -29,9 +29,8 @@ async def get_contacts(limit: int, offset: int, first_name: str, last_name: str,
                 email is None or Contact.email.ilike(f"%{email}%"),
             )
         )
-    result = await db.execute(stmt)
-    contacts = result.scalars().all()
-    return contacts
+    contacts = await db.execute(stmt)
+    return contacts.scalars().all()
 
 
 async def get_contact(contact_id: int, db: AsyncSession, user: User):

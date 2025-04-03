@@ -1,8 +1,6 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
 from datetime import date, datetime
 from typing import Optional
-
-from src.schemas.user import UserResponse
 
 
 def validate_birthday(value: date) -> date:
@@ -71,5 +69,5 @@ class ContactShortResponse(BaseModel):
     updated_at: datetime | None
     # user: UserResponse | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes = True)
+
