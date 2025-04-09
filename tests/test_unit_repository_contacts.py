@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import AsyncMock, MagicMock, ANY
+from unittest.mock import AsyncMock, MagicMock
 
 from sqlalchemy import select, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -56,6 +56,118 @@ class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
                                     self.session, self.user)
 
         self.assertEqual(result, [])
+
+    async def test_get_contacts_filter_by_first_name(self):
+        limit = 10
+        offset = 0
+        first_name = "Jane"
+        last_name = ""
+        email = ""
+
+        # Список контактів у базі
+        contacts = [
+            Contact(id=1, first_name="John", last_name="Doe",
+                    email="john@example.com", phone_number="1234567890",
+                    birthday="1990-01-01", user=self.user),
+            Contact(id=2, first_name="Jane", last_name="Smith",
+                    email="jane@example.com", phone_number="0987654321",
+                    birthday="1995-03-25", user=self.user),
+        ]
+
+        # Мокуємо результат фільтрації
+        mocked_contacts = MagicMock()
+        mocked_contacts.scalars().all.return_value = [
+            contacts[1]]  # Очікуємо тільки контакт "Jane"
+        self.session.execute.return_value = mocked_contacts
+
+        # Виклик функції
+        result = await get_contacts(limit, offset, first_name, last_name,
+                                    email, self.session, self.user)
+
+        # Перевірки
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0], contacts[1])
+
+    async def test_get_contacts_filter_by_email(self):
+        limit = 10
+        offset = 0
+        first_name = ""
+        last_name = ""
+        email = "john@example.com"
+
+        contacts = [
+            Contact(id=1, first_name="John", last_name="Doe",
+                    email="john@example.com", phone_number="1234567890",
+                    birthday="1990-01-01", user=self.user),
+            Contact(id=2, first_name="Jane", last_name="Smith",
+                    email="jane@example.com", phone_number="0987654321",
+                    birthday="1995-03-25", user=self.user),
+        ]
+
+        mocked_contacts = MagicMock()
+        mocked_contacts.scalars().all.return_value = [
+            contacts[0]]  # Очікуємо тільки контакт "John"
+        self.session.execute.return_value = mocked_contacts
+
+        result = await get_contacts(limit, offset, first_name, last_name,
+                                    email, self.session, self.user)
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0], contacts[0])
+
+    async def test_get_contacts_filter_by_last_name(self):
+        limit = 10
+        offset = 0
+        first_name = ""
+        last_name = "Smith"
+        email = ""
+
+        contacts = [
+            Contact(id=1, first_name="John", last_name="Doe",
+                    email="john@example.com", phone_number="1234567890",
+                    birthday="1990-01-01", user=self.user),
+            Contact(id=2, first_name="Jane", last_name="Smith",
+                    email="jane@example.com", phone_number="0987654321",
+                    birthday="1995-03-25", user=self.user),
+        ]
+
+        mocked_contacts = MagicMock()
+        mocked_contacts.scalars().all.return_value = [
+            contacts[1]]  # Очікуємо тільки контакт із прізвищем "Smith"
+        self.session.execute.return_value = mocked_contacts
+
+        result = await get_contacts(limit, offset, first_name, last_name,
+                                    email, self.session, self.user)
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0], contacts[1])
+
+    async def test_get_contacts_multiple_filters(self):
+        limit = 10
+        offset = 0
+        first_name = "Jane"
+        last_name = "Smith"
+        email = "jane@example.com"
+
+        contacts = [
+            Contact(id=1, first_name="John", last_name="Doe",
+                    email="john@example.com", phone_number="1234567890",
+                    birthday="1990-01-01", user=self.user),
+            Contact(id=2, first_name="Jane", last_name="Smith",
+                    email="jane@example.com", phone_number="0987654321",
+                    birthday="1995-03-25", user=self.user),
+        ]
+
+        mocked_contacts = MagicMock()
+        # Очікуємо тільки контакт, який відповідає всім фільтрам
+        mocked_contacts.scalars().all.return_value = [contacts[1]]
+        self.session.execute.return_value = mocked_contacts
+
+        result = await get_contacts(limit, offset, first_name, last_name,
+                                    email, self.session, self.user)
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0], contacts[1])
 
     async def test_get_contact(self):
         contact_id = 1

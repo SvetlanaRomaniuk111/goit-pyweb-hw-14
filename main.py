@@ -1,7 +1,10 @@
+from contextlib import asynccontextmanager
+
 import redis.asyncio as redis
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_limiter import FastAPILimiter
+from redis import Redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +12,8 @@ from src.database.db import get_db
 from src.middleware.middleware import user_agent_ban_middleware
 from src.routes import contacts, auth, users
 from src.conf.config import config
+import logging
+
 
 app = FastAPI()
 
@@ -29,8 +34,9 @@ app.include_router(users.router, prefix="/api")
 app.include_router(contacts.router, prefix="/api")
 
 
-@app.on_event("startup")
-async def startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Код для запуску програми
     r = await redis.Redis(
         host=config.REDIS_DOMAIN,
         port=config.REDIS_PORT,
@@ -38,6 +44,11 @@ async def startup():
         password=config.REDIS_PASSWORD,
     )
     await FastAPILimiter.init(r)
+    yield  # Дозволяє виконання програми
+    # Код для завершення програми (при необхідності)
+    await r.close()  # Закриття підключення до Redis
+
+app.router.lifespan_context = lifespan # type: ignore
 
 
 @app.get("/")

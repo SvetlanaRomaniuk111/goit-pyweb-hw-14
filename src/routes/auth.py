@@ -11,6 +11,7 @@ from src.repository import users as repositories_users
 from src.schemas.user import UserSchema, UserResponse, TokenSchema, RequestEmail
 from src.services.auth import auth_service
 from src.services.email import send_email
+from src.conf import messages
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 get_refresh_token = HTTPBearer()
@@ -40,7 +41,7 @@ async def signup(
     exist_user = await repositories_users.get_user_by_email(body.email, db)
     if exist_user:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Account already exists"
+            status_code=status.HTTP_409_CONFLICT, detail=messages.ACCOUNT_EXIST
         )
     body.password = auth_service.get_password_hash(body.password)
     new_user = await repositories_users.create_user(body, db)
@@ -67,15 +68,15 @@ async def login(
         user = await repositories_users.get_user_by_email(body.username, db)
         if user is None:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL
             )
         if not user.confirmed:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Email not confirmed"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.EMAIL_NOT_CONFIRMED
             )
         if not auth_service.verify_password(body.password, user.password):
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_PASSWORD
             )
         # Generate JWT
         access_token = await auth_service.create_access_token(data={"sub": user.email})
@@ -93,7 +94,7 @@ async def login(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error",
+            detail=messages.INTERNAL_SERVER_ERROR,
         )
 
 
@@ -118,7 +119,7 @@ async def refresh_token(
     if user.refresh_token != token:
         await repositories_users.update_token(user, None, db)
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_REFRESH_TOKEN
         )
 
     access_token = await auth_service.create_access_token(data={"sub": email})
@@ -147,7 +148,7 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
     user = await repositories_users.get_user_by_email(email, db)
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=messages.VERIFICATION_ERROR
         )
     if user.confirmed:
         return {"message": "Your email is already confirmed"}
@@ -206,7 +207,7 @@ async def password_reset_request(
     user = await repositories_users.get_user_by_email(body.email, db)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=messages.USER_NOT_FOUND
         )
 
     # Генерація токена для скидання паролю
@@ -236,7 +237,7 @@ async def password_reset_confirm(
         user = await repositories_users.get_user_by_email(email, db)
         if not user:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail=messages.USER_NOT_FOUND
             )
 
         # Оновлення паролю
@@ -244,5 +245,5 @@ async def password_reset_confirm(
         return {"message": "Password has been reset successfully"}
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token or user"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=messages.INVALID_TOKEN_OR_USER
         )

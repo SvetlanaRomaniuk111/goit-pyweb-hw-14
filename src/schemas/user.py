@@ -11,7 +11,7 @@ class UserResponse(BaseModel):
     id: int = 1
     username: str
     email: EmailStr
-    avatar: str
+    avatar: str | None
 
     model_config = ConfigDict(from_attributes = True)
 

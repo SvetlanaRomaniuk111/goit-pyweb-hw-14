@@ -2,6 +2,8 @@ from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
 from datetime import date, datetime
 from typing import Optional
 
+from src.schemas.user import UserResponse
+
 
 def validate_birthday(value: date) -> date:
     if value > date.today():

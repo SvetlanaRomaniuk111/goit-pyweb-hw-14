@@ -11,6 +11,7 @@ from src.schemas.contact import (
     ContactShortResponse,
 )
 from src.services.auth import auth_service
+from src.conf import messages
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
@@ -66,10 +67,10 @@ async def get_upcoming_birthdays(
         return validated_contacts
     except HTTPException as http_exc:
         raise http_exc
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {e}",
+            detail=messages.INTERNAL_SERVER_ERROR,
         )
 
 
@@ -99,10 +100,10 @@ async def create_contact(
     try:
         contact = await repositories_contacts.create_contact(body, db, user)
         return contact
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {e}",
+            detail=messages.INTERNAL_SERVER_ERROR,
         )
 
 
@@ -126,7 +127,7 @@ async def get_contact(
     contact = await repositories_contacts.get_contact(contact_id, db, user)
     if contact is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND
         )
     return contact
 
@@ -154,7 +155,7 @@ async def update_contact(
     contact = await repositories_contacts.update_contact(contact_id, body, db, user)
     if contact is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND
         )
     return contact
 
