@@ -50,6 +50,7 @@ async def clear_database():
         # Видалення всіх даних з таблиць
         await session.execute(delete(Contact))
         await session.commit()
+    yield  # Забезпечує коректне завершення
 
 
 @pytest.fixture(scope="module")

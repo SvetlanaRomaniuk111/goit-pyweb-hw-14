@@ -8,6 +8,8 @@ from src.schemas.contact import ContactCreateSchema, ContactUpdateSchema
 from src.repository.contacts import get_contacts, get_contact, create_contact, \
     update_contact, delete_contact, get_upcoming_birthdays
 from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
+
 
 
 class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
@@ -391,7 +393,7 @@ class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
             last_name="Doe",
             email="john.doe@example.com",
             phone_number="1234567890",
-            birthday=date(today.year, today.month, today.day + 1),
+            birthday = today + relativedelta(days=1),
             # День народження завтра
             user=self.user
         )
@@ -401,7 +403,7 @@ class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
             last_name="Doe",
             email="jane.doe@example.com",
             phone_number="0987654321",
-            birthday=date(today.year, today.month, today.day + 6),
+            birthday = today + relativedelta(days=6),
             # День народження через 6 днів
             user=self.user
         )
