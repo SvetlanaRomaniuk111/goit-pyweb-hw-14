@@ -215,7 +215,7 @@ class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
             last_name="Doe",
             email="6V7ZM@example.com",
             phone_number="1234512345",
-            birthday="1990-04-07"
+            birthday=date.fromisoformat("1990-04-07")
         )
 
         # Мокування методів сесії
@@ -244,7 +244,7 @@ class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
             last_name="Doe",
             email="6V7ZM@example.com",
             phone_number="1234512345",
-            birthday="1990-04-07"
+            birthday=date.fromisoformat("1990-04-07")
         )
 
         # Імітація помилки в `commit`
@@ -267,7 +267,7 @@ class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
                                    last_name="Updated Last Name",
                                    email="updated_email@example.com",
                                    phone_number="5555555555",
-                                   birthday="2000-01-01")
+                                   birthday=date.fromisoformat("2000-01-01"))
 
         # Створюємо існуючий об'єкт контакту
         existing_contact = Contact(
@@ -311,7 +311,7 @@ class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
         self.session.execute.return_value = mocked_contact
 
         # Виклик функції
-        result = await update_contact(contact_id, ContactUpdateSchema(),
+        result = await update_contact(contact_id, ContactUpdateSchema(first_name="test", last_name="user"),
                                       self.session, self.user)
 
         # Перевірки
